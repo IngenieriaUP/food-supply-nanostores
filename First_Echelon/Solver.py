@@ -46,7 +46,7 @@ random.seed(RANDOM_SEED)
 # In[4]:
 
 
-TSP_NAME = "distance_matrix_vrp_bodegas_sa"
+TSP_NAME = "cost_matrix"
 COORDENADAS = "demanda_bodegas"
 DEPOT_LOCATION = 0
 POPULATION_SIZE = 500
@@ -59,7 +59,7 @@ POPULATION_SIZE = 500
 
 P_CROSSOVER = 0.9  # probability for crossover
 P_MUTATION = 0.2   # probability for mutating an individual
-MAX_GENERATIONS = 1
+MAX_GENERATIONS = 10000
 
 
 # In[ ]:

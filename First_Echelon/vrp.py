@@ -8,14 +8,14 @@ import tsp
 
 class VehicleRoutingProblem:
 
-    def __init__(self,tspName,coordenadas, numOfVehicles, depotIndex):
+    def __init__(self, tspName, coordenadas, numOfVehicles, depotIndex):
         """
         Creates an instance of a VRP
         :param tspName: name of the underlying TSP
         :param numOfVehicles: number of vehicles used
         :param depotIndex: the index of the TSP city that will be used as the depot location
         """
-        self.tsp = tsp.TravelingSalesmanProblem(tspName,coordenadas)
+        self.tsp = tsp.TravelingSalesmanProblem(tspName, coordenadas)
         self.numOfVehicles = numOfVehicles
         self.depotIndex = depotIndex
 
@@ -160,21 +160,22 @@ class VehicleRoutingProblem:
         return plt
 
 
-def main():
+def main(verbose=False, plot=False):
     # create a problem instance:
-    vrp = VehicleRoutingProblem("distance_matrix_vrp_bodegas_sa","demanda_bodegas", 3, 0)
+    vrp = VehicleRoutingProblem("cost_matrix", "demanda_bodegas", 3, 0)
 
     # generate random solution and evaluate it:
     randomSolution = random.sample(range(len(vrp)), len(vrp))
-    print("random solution = ", randomSolution)
-    print("route breakdown = ", vrp.getRoutes(randomSolution))
-    print("max distance = ", vrp.getMaxDistance(randomSolution))
+    if verbose:
+        print("random solution = ", randomSolution)
+        print("route breakdown = ", vrp.getRoutes(randomSolution))
+        print("max distance = ", vrp.getMaxDistance(randomSolution))
 
     # plot the solution:
-    plot = vrp.plotData(randomSolution)
-    plot.show()
+    if plot:
+        plot = vrp.plotData(randomSolution)
+        plot.show()
 
 
 if __name__ == "__main__":
     main()
-

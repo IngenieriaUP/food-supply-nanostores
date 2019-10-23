@@ -18,83 +18,76 @@ import pandas as pd
 
 
 class TravelingSalesmanProblem:
- 
 
-    def __init__(self,name,coordenadas):
-     
+    def __init__(self, name, coordenadas):
 
         # initialize instance variables:
         self.name = name
         self.locations = []
         self.distances = []
         self.tspSize = 0
-        self.coordenadas=coordenadas
-    
+        self.coordenadas = coordenadas
 
         # initialize the data:
         self.__initData()
 
-
-
     def __len__(self):
- 
-        return self.tspSize   #retorna cuantas ciudades hay en el problema
+
+        return self.tspSize  # retorna cuantas ciudades hay en el problema
 
     def __initData(self):
-        
-        
-        #crear data desde cero
+
+        # crear data desde cero
         if not self.locations or not self.distances:
             self.__createData()
-        
+
         self.tspSize = len(self.locations)
 
     def __createData(self):
-        
-        self.locations=[]
-      
-    #         self.locations = [[i,j] for i in range (self.tspSize) for j in range (self.tspSize)]
-        
-        #dataframe
-        file=pd.read_csv("/home/diegomatuk/snap/julia/Pruebas/"+self.name+".csv",sep=",",header=None)
-        file=file.iloc[0:,0:]
-        
-        
-        #coordenadas
-        coordenadas=pd.read_csv("/home/diegomatuk/snap/julia/Pruebas/"+self.coordenadas+".csv")
-        coordenadas=coordenadas.iloc[:,4:6]
 
-        coordenadas=coordenadas.iloc[1:]
-        
+        self.locations = []
+
+    #         self.locations = [[i,j] for i in range (self.tspSize) for j in range (self.tspSize)]
+
+        # dataframe
+        file = pd.read_csv("Input/"+self.name+".csv", sep=",", header=None)
+        file = file.iloc[0:, 0:]
+
+        # coordenadas
+        coordenadas = pd.read_csv("Input/"+self.coordenadas+".csv")
+        coordenadas = coordenadas.iloc[:, 4:6]
+
+        coordenadas = coordenadas.iloc[1:]
+
         for fila in range(len(coordenadas.index)):
             self.locations.append(np.asarray(coordenadas.iloc[fila], dtype=np.float32))
-        
-        #longitud del problema
-        self.tspSize=len(self.locations)
-        
-        #imprimir la data del problem
-        print("tamaño={}".format(self.tspSize),"locations={}".format(self.locations))
-        
-        #crear la matriz con 0 primero
+
+        # longitud del problema
+        self.tspSize = len(self.locations)
+
+        # imprimir la data del problem
+        print("tamaño={}".format(self.tspSize), "locations={}".format(self.locations))
+
+        # crear la matriz con 0 primero
         self.distances = [[0] * self.tspSize for _ in range(self.tspSize)]
 
-        #que la nueva matriz tenga las ya calculadas distancias (solo va a ser el triangulo inferior)
+        # que la nueva matriz tenga las ya calculadas distancias (solo va a ser el triangulo inferior)
         for i in range(self.tspSize):
             for j in range(i + 1, self.tspSize):
                 # poner la distancia del dataframe a la nueva matriz
                 distance = file[i][j]
                 self.distances[i][j] = distance
                 self.distances[j][i] = distance
-                print("{}, {}: location1 = {}, location2 = {} => distance = {}".format(i, j, self.locations[i], self.locations[j], distance))
+                print("{}, {}: location1 = {}, location2 = {} => distance = {}".format(
+                    i, j, self.locations[i], self.locations[j], distance))
 #         print(self.distances)
 #             # serialize locations and distances:
 #             pickle.dump(self.locations, open(os.path.join("tsp-data", self.name + "-loc.pickle"), "wb"))
 #             pickle.dump(self.distances, open(os.path.join("tsp-data", self.name + "-dist.pickle"), "wb"))
 
-
     def getTotalDistance(self, ciudad):
         """ciudad: lista de las ciudades que hay en la ruta :)"""
-        
+
         # distancia entre la ultima y primera ciudad
         distance = self.distances[ciudad[-1]][ciudad[0]]
 
@@ -103,7 +96,6 @@ class TravelingSalesmanProblem:
             distance += self.distances[ciudad[i]][ciudad[i + 1]]
 
         return distance
-
 
     def plotData(self, indices):
         """plots the path described by the given indices of the cities
@@ -124,42 +116,19 @@ class TravelingSalesmanProblem:
 
         return plt
 
-   
- 
 
+def main(verbose=False):
+    tsp = TravelingSalesmanProblem("cost_matrix", "demanda_bodegas")
 
-# In[33]:
+    solucionoptima = []
+    if verbose:
+        print("Soluciòn òptima=", solucionoptima)
+        print("Soluciòn òptima=", tsp.getTotalDistance(solucionoptima))
 
-
-def main():
-    tsp=TravelingSalesmanProblem("distance_matrix_vrp_bodegas_sa","demanda_bodegas")
-    
-    solucionoptima=[]
-    print("Soluciòn òptima=",solucionoptima)
-    print("Soluciòn òptima=",tsp.getTotalDistance(solucionoptima))
-
-    
-    plotear=tsp.plotData(solucionoptima)
+    plotear = tsp.plotData(solucionoptima)
 
     plotear.show()
-    
 
 
-# In[34]:
-
-
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-

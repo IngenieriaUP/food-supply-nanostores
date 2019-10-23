@@ -3,9 +3,6 @@
 
 # # Main Imports
 
-# In[1]:
-
-
 import random
 import array
 import vrp as VRP
@@ -25,7 +22,8 @@ from tqdm import tqdm
 # In[2]:
 
 
-combinations = [(n_vehicles, hof) for n_vehicles in np.linspace(1, 620, num=32, dtype=int) for hof in [5,10,20,30]]
+combinations = [(n_vehicles, hof) for n_vehicles in np.linspace(
+    1, 620, num=32, dtype=int) for hof in [5, 10, 20, 30]]
 
 experiment_dict = {'experiment_{}'.format(i): {
     'num_vehicles': combinations[i][0],
@@ -49,7 +47,7 @@ random.seed(RANDOM_SEED)
 
 
 TSP_NAME = "distance_matrix_vrp_bodegas_sa"
-COORDENADAS="demanda_bodegas"
+COORDENADAS = "demanda_bodegas"
 DEPOT_LOCATION = 0
 POPULATION_SIZE = 500
 
@@ -92,7 +90,7 @@ creator.create("Individual", array.array, typecode='i', fitness=creator.FitnessM
 
 
 def vrpDistance(individual):
-    return vrp.getMaxDistance(individual), 
+    return vrp.getMaxDistance(individual),
 
 
 # In[ ]:
@@ -106,7 +104,6 @@ toolbox.register("evaluate", vrpDistance)
 
 def genetic_algorithm_vrp(population_size, hall_of_fame_size, max_generations, vrp_fn, best_genetic_fn,
                           min_fitness_fn, mean_fitness_fn, fitness_fn, route_fn, total_veh, save=False, verbose=False, plot=False):
-    
     '''
     @param population_size: population size for experiment
     @param hall_of_fame_size: hof size for experiment
@@ -118,23 +115,23 @@ def genetic_algorithm_vrp(population_size, hall_of_fame_size, max_generations, v
     @param fitness_fn: filename to save fitness function plot
     @param route_fn: filename to save optimal route plot
     @param total_veh: total number of vehicles for VRP
-    '''    
-    #Create initial population (generation 0):
+    '''
+    # Create initial population (generation 0):
     population = toolbox.populationCreator(n=population_size)
 
-    #Prepare the statistics object:
+    # Prepare the statistics object:
     stats = tools.Statistics(lambda ind: ind.fitness.values)
     stats.register("min", np.min)
     stats.register("avg", np.mean)
 
-    #Define the hall-of-fame object:
+    # Define the hall-of-fame object:
     hof = tools.HallOfFame(hall_of_fame_size)
 
-    #Perform the Genetic Algorithm flow with hof feature added:
+    # Perform the Genetic Algorithm flow with hof feature added:
     population, logbook = elitism.eaSimpleWithElitism(population, toolbox, cxpb=P_CROSSOVER, mutpb=P_MUTATION,
-                                              ngen=1, stats=stats, halloffame=hof, verbose=True)
+                                                      ngen=1, stats=stats, halloffame=hof, verbose=True)
 
-    #Best individual stats
+    # Best individual stats
     best = hof.items[0]
     if verbose:
         print("-- Best Ever Individual = ", best)
@@ -144,17 +141,19 @@ def genetic_algorithm_vrp(population_size, hall_of_fame_size, max_generations, v
         print("-- total distance = ", vrp.getTotalDistance(best))
         print("-- max distance = ", vrp.getMaxDistance(best))
 
-    #Main statistics
+    # Main statistics
     minFitnessValues, meanFitnessValues = logbook.select("min", "avg")
-    
+
     if save:
         cPickle.dump(vrp, open('./Output/pkl_files/{}'.format(vrp_fn), 'wb'), -1)
         cPickle.dump(best, open('./Output/pkl_files/{}'.format(best_genetic_fn), 'wb'), -1)
-        cPickle.dump(minFitnessValues, open('./Output/pkl_files/{}'.format(min_fitness_fn), 'wb'), -1)
-        cPickle.dump(meanFitnessValues, open('./Output/pkl_files/{}'.format(mean_fitness_fn), 'wb'), -1)
-        
+        cPickle.dump(minFitnessValues, open(
+            './Output/pkl_files/{}'.format(min_fitness_fn), 'wb'), -1)
+        cPickle.dump(meanFitnessValues, open(
+            './Output/pkl_files/{}'.format(mean_fitness_fn), 'wb'), -1)
+
     if plot:
-        #Plot Best Solution
+        # Plot Best Solution
         plt.figure(1)
         plt.xlabel('Latitude')
         plt.ylabel('Longitude')
@@ -163,7 +162,7 @@ def genetic_algorithm_vrp(population_size, hall_of_fame_size, max_generations, v
         plt.savefig('./Output/plots/{}'.format(route_fn))
         plt.show()
 
-        #Plot solution
+        # Plot solution
         plt.figure(2)
         plt.plot(minFitnessValues, color='red')
         plt.plot(meanFitnessValues, color='green')
@@ -181,10 +180,15 @@ failed_experiment = dict()
 
 for key in tqdm(experiment_dict.keys()):
     try:
-        vrp = VRP.VehicleRoutingProblem(TSP_NAME,COORDENADAS, experiment_dict[key]['num_vehicles'], DEPOT_LOCATION)
-        toolbox.register("randomOrder", random.sample,  range(len(vrp)), len(vrp)) # Operator for randomly shuffled indices in GA
-        toolbox.register("individualCreator", tools.initIterate, creator.Individual, toolbox.randomOrder) # Individual creation operator to fill up an Individual instance with shuffled indices
-        toolbox.register("populationCreator", tools.initRepeat, list, toolbox.individualCreator) # Population creation operator
+        vrp = VRP.VehicleRoutingProblem(
+            TSP_NAME, COORDENADAS, experiment_dict[key]['num_vehicles'], DEPOT_LOCATION)
+        toolbox.register("randomOrder", random.sample,  range(len(vrp)), len(vrp)
+                         )  # Operator for randomly shuffled indices in GA
+        # Individual creation operator to fill up an Individual instance with shuffled indices
+        toolbox.register("individualCreator", tools.initIterate,
+                         creator.Individual, toolbox.randomOrder)
+        toolbox.register("populationCreator", tools.initRepeat, list,
+                         toolbox.individualCreator)  # Population creation operator
 
         # Genetic operators
         toolbox.register("select", tools.selTournament, tournsize=2)
@@ -194,12 +198,12 @@ for key in tqdm(experiment_dict.keys()):
         genetic_algorithm_vrp(POPULATION_SIZE,
                               experiment_dict[key]['hof'],
                               MAX_GENERATIONS,
-                              'vrp_solution_{}.pkl'.format(key), 
-                              'best_genetic_solution_{}.pkl'.format(key), 
+                              'vrp_solution_{}.pkl'.format(key),
+                              'best_genetic_solution_{}.pkl'.format(key),
                               'min_fitness_{}.pkl'.format(key),
                               'mean_fitness_{}.pkl'.format(key),
-                              'fitness_function_{}.png'.format(key), 
-                              'route_plot_{}.png'.format(key), 
+                              'fitness_function_{}.png'.format(key),
+                              'route_plot_{}.png'.format(key),
                               experiment_dict[key]['num_vehicles'], save=True)
     except:
         print(experiment_dict[key])
@@ -207,7 +211,3 @@ for key in tqdm(experiment_dict.keys()):
 
 
 # In[ ]:
-
-
-
-

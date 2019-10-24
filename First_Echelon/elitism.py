@@ -1,8 +1,9 @@
 from deap import tools
 from deap import algorithms
 
-def eaSimpleWithElitism(population, toolbox, cxpb, mutpb, ngen, stats=None,
-             halloffame=None, epsilon_es, verbose=__debug__):
+
+def eaSimpleWithElitism(population, toolbox, cxpb, mutpb, ngen, epsilon_es=0.01255, stats=None,
+                        halloffame=None, verbose=__debug__):
     """This algorithm is similar to DEAP eaSimple() algorithm, with the modification that
     halloffame is used to implment an elitism mechanism. Th eindividuals contained in the
     halloffame are directly injected into the next generation and are not subject to the
@@ -57,29 +58,30 @@ def eaSimpleWithElitism(population, toolbox, cxpb, mutpb, ngen, stats=None,
         logbook.record(gen=gen, nevals=len(invalid_ind), **record)
         if verbose:
             print(logbook.stream)
-            
+
         # Early Stopping implementation
         # only accumulate consectutive ocurrences
-        
+
         actual_mean_fitness = logbook.select("avg")
-        
+
         if gen != 1:
             avg_fitness_diff = previous_mean_fitness - actual_mean_fitness
-            if  minimize == True:
+            previous_mean_fitness = actual_mean_fitness
+            if minimize == True:
                 if avg_fitness_diff < actual_mean_fitness*epsilon_es:
                     iter_counter_es += 1
                 else:
-                    iter_counter_es = 0 # reset counter when condition is not met
+                    iter_counter_es = 0  # reset counter when condition is not met
             else:
                 if avg_fitness_diff > actual_mean_fitness*epsilon_es:
                     iter_counter_es += 1
                 else:
-                    iter_counter_es = 0 # reset counter when condition is not met
+                    iter_counter_es = 0  # reset counter when condition is not met
         else:
+            previous_mean_fitness = actual_mean_fitness
             iter_counter_es = 0
-            
+
         if iter_counter_es >= 100:
             return population, logbook
 
     return population, logbook
-

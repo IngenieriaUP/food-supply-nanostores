@@ -55,7 +55,7 @@ class TravelingSalesmanProblem:
 
         # coordenadas
         coordenadas = pd.read_csv("Input/"+self.coordenadas+".csv")
-        coordenadas = coordenadas.iloc[:, 4:6]
+        coordenadas = coordenadas.iloc[0:601, 4:6]
 
         coordenadas = coordenadas.iloc[1:]
 
@@ -73,13 +73,13 @@ class TravelingSalesmanProblem:
 
         # que la nueva matriz tenga las ya calculadas distancias (solo va a ser el triangulo inferior)
         for i in range(self.tspSize):
-            for j in range(i + 1, self.tspSize):
+            for j in range(i+1, self.tspSize):
                 # poner la distancia del dataframe a la nueva matriz
                 distance = file[i][j]
                 self.distances[i][j] = distance
                 self.distances[j][i] = distance
-                print("{}, {}: location1 = {}, location2 = {} => distance = {}".format(
-                    i, j, self.locations[i], self.locations[j], distance))
+#                 print("{}, {}: location1 = {}, location2 = {} => distance = {}".format(
+#                     i, j, self.locations[i], self.locations[j], distance))
 #         print(self.distances)
 #             # serialize locations and distances:
 #             pickle.dump(self.locations, open(os.path.join("tsp-data", self.name + "-loc.pickle"), "wb"))
@@ -124,11 +124,5 @@ def main(verbose=False):
     if verbose:
         print("Soluciòn òptima=", solucionoptima)
         print("Soluciòn òptima=", tsp.getTotalDistance(solucionoptima))
-
-    plotear = tsp.plotData(solucionoptima)
-
-    plotear.show()
-
-
-if __name__ == "__main__":
-    main()
+        plotear = tsp.plotData(solucionoptima)
+        plotear.show()

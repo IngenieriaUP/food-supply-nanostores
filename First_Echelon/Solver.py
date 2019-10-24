@@ -103,7 +103,7 @@ toolbox.register("evaluate", vrpDistance)
 
 
 def genetic_algorithm_vrp(population_size, hall_of_fame_size, max_generations, vrp_fn, best_genetic_fn,
-                          min_fitness_fn, mean_fitness_fn, fitness_fn, route_fn, total_veh, save=False, verbose=False, plot=False):
+                          min_fitness_fn, mean_fitness_fn, fitness_fn, route_fn, total_veh, save=True, verbose=False, plot=False):
     '''
     @param population_size: population size for experiment
     @param hall_of_fame_size: hof size for experiment
@@ -129,7 +129,7 @@ def genetic_algorithm_vrp(population_size, hall_of_fame_size, max_generations, v
 
     # Perform the Genetic Algorithm flow with hof feature added:
     population, logbook = elitism.eaSimpleWithElitism(population, toolbox, cxpb=P_CROSSOVER, mutpb=P_MUTATION,
-                                                      ngen=1, stats=stats, halloffame=hof, verbose=True)
+                                                      ngen=MAX_GENERATIONS, stats=stats, halloffame=hof, verbose=True)
 
     # Best individual stats
     best = hof.items[0]

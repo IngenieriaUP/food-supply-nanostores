@@ -129,7 +129,7 @@ def genetic_algorithm_vrp(population_size, hall_of_fame_size, max_generations, v
 
     # Perform the Genetic Algorithm flow with hof feature added:
     population, logbook = elitism.eaSimpleWithElitism(population, toolbox, cxpb=P_CROSSOVER, mutpb=P_MUTATION,
-                                                      ngen=MAX_GENERATIONS, stats=stats, halloffame=hof, verbose=True)
+                                                      ngen=max_generations, stats=stats, halloffame=hof, verbose=False)
 
     # Best individual stats
     best = hof.items[0]
@@ -145,12 +145,12 @@ def genetic_algorithm_vrp(population_size, hall_of_fame_size, max_generations, v
     minFitnessValues, meanFitnessValues = logbook.select("min", "avg")
 
     if save:
-        cPickle.dump(vrp, open('./Output/pkl_files/{}'.format(vrp_fn), 'wb'), -1)
-        cPickle.dump(best, open('./Output/pkl_files/{}'.format(best_genetic_fn), 'wb'), -1)
+        cPickle.dump(vrp, open('Output/pkl_files/{}'.format(vrp_fn), 'wb'), -1)
+        cPickle.dump(best, open('Output/{}'.format(best_genetic_fn), 'wb'), -1)
         cPickle.dump(minFitnessValues, open(
-            './Output/pkl_files/{}'.format(min_fitness_fn), 'wb'), -1)
+            'Output/pkl_files/{}'.format(min_fitness_fn), 'wb'), -1)
         cPickle.dump(meanFitnessValues, open(
-            './Output/pkl_files/{}'.format(mean_fitness_fn), 'wb'), -1)
+            'Output/pkl_files/{}'.format(mean_fitness_fn), 'wb'), -1)
 
     if plot:
         # Plot Best Solution
@@ -159,7 +159,7 @@ def genetic_algorithm_vrp(population_size, hall_of_fame_size, max_generations, v
         plt.ylabel('Longitude')
         plt.title('Best Route with {} vehicles'.format(total_veh))
         vrp.plotData(best)
-        plt.savefig('./Output/plots/{}'.format(route_fn))
+        plt.savefig('/Output/plots/{}'.format(route_fn))
         plt.show()
 
         # Plot solution
@@ -169,45 +169,47 @@ def genetic_algorithm_vrp(population_size, hall_of_fame_size, max_generations, v
         plt.xlabel('Generation')
         plt.ylabel('Min / Average Fitness')
         plt.title('Min and Average fitness vs. Generation')
-        plt.savefig('./Output/plots/{}'.format(fitness_fn), dpi=300)
+        plt.savefig('/Output/plots/{}'.format(fitness_fn), dpi=300)
         plt.show()
-
 
 # In[ ]:
 
 
 failed_experiment = dict()
 
+
 for key in tqdm(experiment_dict.keys()):
-    try:
-        vrp = VRP.VehicleRoutingProblem(
-            TSP_NAME, COORDENADAS, experiment_dict[key]['num_vehicles'], DEPOT_LOCATION)
-        toolbox.register("randomOrder", random.sample,  range(len(vrp)), len(vrp)
-                         )  # Operator for randomly shuffled indices in GA
-        # Individual creation operator to fill up an Individual instance with shuffled indices
-        toolbox.register("individualCreator", tools.initIterate,
-                         creator.Individual, toolbox.randomOrder)
-        toolbox.register("populationCreator", tools.initRepeat, list,
-                         toolbox.individualCreator)  # Population creation operator
+    #     try:
+    vrp = VRP.VehicleRoutingProblem(
+        TSP_NAME, COORDENADAS, experiment_dict[key]['num_vehicles'], DEPOT_LOCATION)
 
-        # Genetic operators
-        toolbox.register("select", tools.selTournament, tournsize=2)
-        toolbox.register("mutate", tools.mutShuffleIndexes, indpb=1.0/len(vrp))
-        toolbox.register("mate", tools.cxUniformPartialyMatched, indpb=2.0/len(vrp))
+    # Operator for randomly shuffled indices in GA
+    toolbox.register("randomOrder", random.sample,  range(len(vrp)), len(vrp))
+    # Individual creation operator to fill up an Individual instance with shuffled indices
+    toolbox.register("individualCreator", tools.initIterate,
+                     creator.Individual, toolbox.randomOrder)
+    # Population creation operator
+    toolbox.register("populationCreator", tools.initRepeat, list, toolbox.individualCreator)
 
-        genetic_algorithm_vrp(POPULATION_SIZE,
-                              experiment_dict[key]['hof'],
-                              MAX_GENERATIONS,
-                              'vrp_solution_{}.pkl'.format(key),
-                              'best_genetic_solution_{}.pkl'.format(key),
-                              'min_fitness_{}.pkl'.format(key),
-                              'mean_fitness_{}.pkl'.format(key),
-                              'fitness_function_{}.png'.format(key),
-                              'route_plot_{}.png'.format(key),
-                              experiment_dict[key]['num_vehicles'], save=True)
-    except:
-        print(experiment_dict[key])
-        failed_experiment[key] = experiment_dict[key]
+    # Genetic operators
+    toolbox.register("select", tools.selTournament, tournsize=2)
+    toolbox.register("mutate", tools.mutShuffleIndexes, indpb=1.0/len(vrp))
+    toolbox.register("mate", tools.cxUniformPartialyMatched, indpb=2.0/len(vrp))
+
+    genetic_algorithm_vrp(POPULATION_SIZE,
+                          experiment_dict[key]['hof'],
+                          MAX_GENERATIONS,
+                          'vrp_solution_{}.pkl'.format(key),
+                          'best_genetic_solution_{}.pkl'.format(key),
+                          'min_fitness_{}.pkl'.format(key),
+                          'mean_fitness_{}.pkl'.format(key),
+                          'fitness_function_{}.png'.format(key),
+                          'route_plot_{}.png'.format(key),
+                          experiment_dict[key]['num_vehicles'], save=True)
+#     except:
+#         print(experiment_dict[key])
+#         failed_experiment[key] = experiment_dict[key]
+#         print("Error")
 
 
 # In[ ]:

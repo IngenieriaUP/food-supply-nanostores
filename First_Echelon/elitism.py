@@ -1,9 +1,10 @@
 from deap import tools
 from deap import algorithms
+import numpy as np
 
 
-def eaSimpleWithElitism(population, toolbox, cxpb, mutpb, ngen, epsilon_es=0.01255, stats=None,
-                        halloffame=None, verbose=__debug__):
+def eaSimpleWithElitism(population, toolbox, cxpb, mutpb, ngen, epsilon_es=0.0001255, stats=None,
+                        halloffame=None, verbose=__debug__, minimize=True):
     """This algorithm is similar to DEAP eaSimple() algorithm, with the modification that
     halloffame is used to implment an elitism mechanism. Th eindividuals contained in the
     halloffame are directly injected into the next generation and are not subject to the
@@ -62,18 +63,18 @@ def eaSimpleWithElitism(population, toolbox, cxpb, mutpb, ngen, epsilon_es=0.012
         # Early Stopping implementation
         # only accumulate consectutive ocurrences
 
-        actual_mean_fitness = logbook.select("avg")
+        actual_mean_fitness = np.array(logbook.select("avg"))
 
         if gen != 1:
-            avg_fitness_diff = previous_mean_fitness - actual_mean_fitness
-            previous_mean_fitness = actual_mean_fitness
+            avg_fitness_diff = actual_mean_fitness[-2] - actual_mean_fitness[-1]
+
             if minimize == True:
-                if avg_fitness_diff < actual_mean_fitness*epsilon_es:
+                if avg_fitness_diff < actual_mean_fitness[-1]*epsilon_es:
                     iter_counter_es += 1
                 else:
                     iter_counter_es = 0  # reset counter when condition is not met
             else:
-                if avg_fitness_diff > actual_mean_fitness*epsilon_es:
+                if avg_fitness_diff > actual_mean_fitness[-1]*epsilon_es:
                     iter_counter_es += 1
                 else:
                     iter_counter_es = 0  # reset counter when condition is not met

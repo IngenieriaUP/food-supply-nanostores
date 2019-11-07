@@ -1,7 +1,14 @@
 # Specific project ignores
 Output/
+Two-phases/Clustering/API_ORS
+Two-phases/Optimization/clust_1
+Two-phases/Optimization/clust_2
+Two-phases/Optimization/clust_3
+Two-phases/Optimization/clust_4
+
 
 # Byte-compiled / optimized / DLL files
+
 __pycache__/
 *.py[cod]
 *$py.class

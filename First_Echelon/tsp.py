@@ -66,7 +66,7 @@ class TravelingSalesmanProblem:
         self.tspSize = len(self.locations)
 
         # imprimir la data del problem
-        print("tamaño={}".format(self.tspSize), "locations={}".format(self.locations))
+#         print("tamaño={}".format(self.tspSize), "locations={}".format(self.locations))
 
         # crear la matriz con 0 primero
         self.distances = [[0] * self.tspSize for _ in range(self.tspSize)]
